@@ -1,5 +1,9 @@
-(function($) {
+/**
+ * jQuery.TableFormInsert
+ * Version 1.1
+ */
 
+(function($) {
     $.fn.extend({
         tfi: function(options) {
             options = $.extend( {}, $.TFI.defaults, options );
@@ -65,7 +69,13 @@
                 if (cells.length < maxCell) {
                     tablebody = tablebody + '<td></td>';
                 } else {
-                    tablebody = tablebody + '<td class="tfiColumn tfiColumn-' + x + ' tfiRow-' + i + '"><input class="tfiInput" type="hidden" name="tfiInput['+i+']['+x+']" value="' + cells[x] + '"><span class="tfiText">' + cells[x] + '<span></td>';
+                    var input = '';
+                    if ( options.changeable ) {
+                        input = '<input class="tfiInput tfiText" type="text" name="tfiInput['+i+']['+x+']" value="' + cells[x] + '">';
+                    } else {
+                        input = '<input class="tfiInput" type="hidden" name="tfiInput['+i+']['+x+']" value="' + cells[x] + '"><span class="tfiText">' + cells[x] + '<span>';
+                    }
+                    tablebody = tablebody + '<td class="tfiColumn tfiColumn-' + x + ' tfiRow-' + i + '">' + input +'</td>';
                 }
             }
             tablebody = tablebody + '</tr>';
@@ -118,6 +128,7 @@
         cellBreak: /[^\t]+/g,
         select: [
         ],
+        changeable: true,
         optionSplitter: true,
         hidetext: true,
         container: '',
