@@ -4,8 +4,11 @@ Small jQuery Plugin which Convert a copied Table from 'Microsoft Excel' or 'Open
 
 Changelog
 ======================
+1.2.1
+ - add infobox for required fields
+
 1.2
- - add requiredFields
+ - add required fields
 
 1.1.2
  - fix set inactive fields when preselect false
