@@ -23,6 +23,15 @@
         var lines = text.match(options.breakRegex);
         
         var maxCell = 0;
+
+        // Remove Old Table
+        if ( options.container === '' ) {
+            if ($(element).next().hasClass('tfiTable')) {
+                $(element).next().remove();
+            }
+        } else {
+            $( options.container ).html( '' );
+        }
         
         // Get Max Cells
         for ( var i = 0; i < lines.length; i++ ) {
@@ -83,7 +92,7 @@
         tablebody = '<tbody>' + tablebody + '</tbody>';
         
         // Create Table
-        table = '<table class="' + options.elementClass + '">' + tablehead + tablebody +'</table>';
+        table = '<table class="tfiTable ' + options.elementClass + '">' + tablehead + tablebody +'</table>';
         
         // Hide Textarea
         if ( options.hidetext ) {
