@@ -17,12 +17,14 @@ Changelog
 Example
 ======================
 `````javascript
-$('#textarea').tfi({
-    select: [
-        ['firstname', 'Firstname'],
-        ['lastname', 'LastName'],
-        ['street', 'Street'],
-        ['nr', 'StreetNumber']
-    ]
+$('#button').click(function() {
+    $('#textarea').tfi({
+        select: [
+            ['firstname', 'Firstname'],
+            ['lastname', 'LastName'],
+            ['street', 'Street'],
+            ['nr', 'StreetNumber']
+        ]
+    });
 });
 `````
