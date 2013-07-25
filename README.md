@@ -1,9 +1,13 @@
-jQuery-TableFormInsert 1.2
+jQuery-TableFormInsert 1.3
 ======================
 Small jQuery Plugin which Convert a copied Table from 'Microsoft Excel' or 'Open Office Calc' into a Table with Input Fields.
 
 Changelog
 ======================
+1.3
+ - fix reconvert required fields check
+ - add multi form support
+
 1.2.1
  - add infobox for required fields
 
