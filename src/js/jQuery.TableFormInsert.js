@@ -51,7 +51,9 @@
             for ( var i = 0; i < options.select.length; i++ ) {
                 var selected = '';
                 if (i === x) {
-                    selected = 'selected';
+                    if ( options.preselect ) {
+                        selected = 'selected';
+                    }
                 }
                 selectOptions = selectOptions + '<option value="' + options.select[i][0] + '" ' + selected + '>' + options.select[i][1] + '</option>';
             }
@@ -103,18 +105,35 @@
         
         // Show Table
         if ( options.container === '' ) {
-            $(element).after(table);
+            $(element).after( table );
         } else {
             $( options.container ).html( table );
         }
+
+        // Set Inactive Fields
+        var tfiTable;
+
+        if ( options.container === '' ) {
+            tfiTable = $(element).next();
+        } else {
+            tfiTable = $( options.container ).find('.tfiTable');
+        }
+
+        $(tfiTable).find('th select').each(function () {
+            if ($(this).val() === '') {
+                var columnClass = '.tfiColumn-' + $(this).data('column');
+                $(this).closest('table').find(columnClass).find('.tfiInput').addClass('deactivatedColumn').not('.deactivatedRow').prop('disabled', true).parent().find('.tfiText').css(options.deactivateCSS);
+                $(this).addClass('deactivated');
+            }
+        });
         
         // Add Event Listener: Type Changed
         $('.tfiTypeChanger').change(function() {
             if ($(this).val() === '') {
-                $( '.tfiColumn-' + $(this).data('column')).find('.tfiInput').addClass('deactivatedColumn').not('.deactivatedRow').prop('disabled', true).parent().find('.tfiText').css(options.deactivateCSS);
+                $(this).closest('table').find( '.tfiColumn-' + $(this).data('column')).find('.tfiInput').addClass('deactivatedColumn').not('.deactivatedRow').prop('disabled', true).parent().find('.tfiText').css(options.deactivateCSS);
                 $(this).addClass('deactivated');
             } else {
-                $( '.tfiColumn-' + $(this).data('column')).find('.tfiInput').removeClass('deactivatedColumn').not('.deactivatedRow').prop('disabled', false).parent().find('.tfiText').css(options.resetCSS);
+                $(this).closest('table').find( '.tfiColumn-' + $(this).data('column')).find('.tfiInput').removeClass('deactivatedColumn').not('.deactivatedRow').prop('disabled', false).parent().find('.tfiText').css(options.resetCSS);
                 $(this).removeClass('deactivated');
             }
         });
@@ -122,15 +141,51 @@
         // Add Event Listener: Row Hide
         $('.tfiCheckbox').change(function() {
             if (!$(this).prop('checked')) {
-                $( '.tfiRow-' + $(this).data('row')).find('.tfiInput').addClass('deactivatedRow').not('.deactivatedColumn').prop('disabled', true).parent().find('.tfiText').css(options.deactivateCSS);
+                $(this).parent('table').find( '.tfiRow-' + $(this).data('row')).find('.tfiInput').addClass('deactivatedRow').not('.deactivatedColumn').prop('disabled', true).parent().find('.tfiText').css(options.deactivateCSS);
                 $(this).addClass('deactivated');
             } else {
-                $( '.tfiRow-' + $(this).data('row')).find('.tfiInput').removeClass('deactivatedRow').not('.deactivatedColumn').prop('disabled', false).parent().find('.tfiText').css(options.resetCSS);
+                $(this).parent('table').find( '.tfiRow-' + $(this).data('row')).find('.tfiInput').removeClass('deactivatedRow').not('.deactivatedColumn').prop('disabled', false).parent().find('.tfiText').css(options.resetCSS);
                 $(this).removeClass('deactivated');
             }
         });
+
+        // Validation
+        if ( options.submitButton !== '' ) {
+            var requiredFields = '';
+            if (options.requiredFields.length > 0) {
+                for ( var i = 0; i < options.requiredFields.length; i++ ) {
+                    var option = options.requiredFields[i];
+                    var splitter = ',';
+                    if (requiredFields === '') {
+                        splitter = '';
+                    }
+                    requiredFields = requiredFields + splitter + option;
+                }
+                $(tfiTable).data('required', requiredFields);
+
+                $(options.submitButton).click(function(event) {
+                    var hasRequiredFields = true;
+                    requiredFields = $(tfiTable).data('required').split(',');
+                    for ( var i = 0; i < requiredFields.length; i++ ) {
+                        hasRequiredField = false;
+                        $(tfiTable).find('th select').each(function() {
+                            if ($(this).val() === requiredFields[i]) {
+                                hasRequiredField = true;
+                            }
+                        });
+                        if (!hasRequiredField) {
+                            hasRequiredFields = false;
+                        }
+                    }
+
+                    if (!hasRequiredFields) {
+                        event.preventDefault();
+                    }
+                });
+            }
+        }
         
-        options.callback(table);
+        options.callback(tfiTable);
     };
 
     /* Default Options */
@@ -139,6 +194,7 @@
         cellBreak: /[\t]/,
         select: [
         ],
+        preselect: true,
         changeable: true,
         optionSplitter: true,
         hidetext: true,
@@ -150,6 +206,9 @@
         resetCSS: {
             color: '#000'
         },
+        submitButton: '',
+        requiredFields: [
+        ],
         deactivateText: 'Not used',
         callback: function (table) {}
     };
