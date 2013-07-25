@@ -20,13 +20,22 @@
         var tablehead = '';
         var tablebody = '';
         var text = $(element).val();
-        var lines = text.match(options.breakRegex);
+        var lines = text.split(options.breakRegex);
         
         var maxCell = 0;
+
+        // Remove Old Table
+        if ( options.container === '' ) {
+            if ($(element).next().hasClass('tfiTable')) {
+                $(element).next().remove();
+            }
+        } else {
+            $( options.container ).html( '' );
+        }
         
         // Get Max Cells
         for ( var i = 0; i < lines.length; i++ ) {
-            var cells = lines[i].match(options.cellBreak);
+            var cells = lines[i].split(options.cellBreak);
             if (cells.length > maxCell) {
                 maxCell = cells.length;
             }
@@ -60,22 +69,24 @@
         
         // Create TableBody
         for ( var i = 0; i < lines.length; i++ ) {
-            var cells = lines[i].match(options.cellBreak);
-            tablebody = tablebody + '<tr>';
-            for ( var x = 0; x < maxCell; x++ ) {
-                if ( x === 0 ) {
-                    tablebody = tablebody + '<td class="tfiCheckColumn"><input class="tfiCheckbox" type="checkbox" name="tfiRow[' + i + ']" data-row="' + i +'" checked></td>';
-                }
-                if (cells.length < maxCell) {
-                    tablebody = tablebody + '<td></td>';
-                } else {
-                    var input = '';
-                    if ( options.changeable ) {
-                        input = '<input class="tfiInput tfiText" type="text" name="tfiInput['+i+']['+x+']" value="' + cells[x] + '">';
-                    } else {
-                        input = '<input class="tfiInput" type="hidden" name="tfiInput['+i+']['+x+']" value="' + cells[x] + '"><span class="tfiText">' + cells[x] + '<span>';
+            if ($.trim(lines[i]).length > 0) {
+                var cells = lines[i].split(options.cellBreak);
+                tablebody = tablebody + '<tr>';
+                for ( var x = 0; x < maxCell; x++ ) {
+                    if ( x === 0 ) {
+                        tablebody = tablebody + '<td class="tfiCheckColumn"><input class="tfiCheckbox" type="checkbox" name="tfiRow[' + i + ']" data-row="' + i +'" checked></td>';
                     }
-                    tablebody = tablebody + '<td class="tfiColumn tfiColumn-' + x + ' tfiRow-' + i + '">' + input +'</td>';
+                    if (cells.length < maxCell) {
+                        tablebody = tablebody + '<td></td>';
+                    } else {
+                        var input = '';
+                        if ( options.changeable ) {
+                            input = '<input class="tfiInput tfiText" type="text" name="tfiInput['+i+']['+x+']" value="' + cells[x] + '">';
+                        } else {
+                            input = '<input class="tfiInput" type="hidden" name="tfiInput['+i+']['+x+']" value="' + cells[x] + '"><span class="tfiText">' + cells[x] + '<span>';
+                        }
+                        tablebody = tablebody + '<td class="tfiColumn tfiColumn-' + x + ' tfiRow-' + i + '">' + input +'</td>';
+                    }
                 }
             }
             tablebody = tablebody + '</tr>';
@@ -83,7 +94,7 @@
         tablebody = '<tbody>' + tablebody + '</tbody>';
         
         // Create Table
-        table = '<table class="' + options.elementClass + '">' + tablehead + tablebody +'</table>';
+        table = '<table class="tfiTable ' + options.elementClass + '">' + tablehead + tablebody +'</table>';
         
         // Hide Textarea
         if ( options.hidetext ) {
@@ -124,8 +135,8 @@
 
     /* Default Options */
     $.TFI.defaults = {
-        breakRegex: /[^\r\n]+/g,
-        cellBreak: /[^\t]+/g,
+        breakRegex: /[\r\n]/,
+        cellBreak: /[\t]/,
         select: [
         ],
         changeable: true,
