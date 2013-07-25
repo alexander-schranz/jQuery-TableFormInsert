@@ -4,6 +4,9 @@
  */
 
 (function($) {
+
+    var tfiTableNr = 1;
+
     $.fn.extend({
         tfi: function(options) {
             options = $.extend( {}, $.TFI.defaults, options );
@@ -96,7 +99,7 @@
         tablebody = '<tbody>' + tablebody + '</tbody>';
         
         // Create Table
-        table = '<table class="tfiTable ' + options.elementClass + '">' + tablehead + tablebody +'</table>';
+        table = '<table id="tfiTable-' + tfiTableNr + '" class="tfiTable ' + options.elementClass + '">' + tablehead + tablebody +'</table>';
         
         // Hide Textarea
         if ( options.hidetext ) {
@@ -161,25 +164,27 @@
                     }
                     requiredFields = requiredFields + splitter + option;
                 }
-                $( tfiTable ).data('required', requiredFields);
-                $( options.submitButton ).data( 'message-box' , options.infoBox );
+                $( '#tfiTable-' + tfiTableNr ).data('required', requiredFields);
+                $( '#tfiTable-' + tfiTableNr ).data( 'message-box' , options.infoBox );
+                $( options.submitButton).data( 'tfi-id' , '#tfiTable-' + tfiTableNr);
                 $( options.submitButton ).click(function(event) {
-                    var messageBox = $(this).data( 'message-box' );
+                    var tableId = $( this ).data( 'tfi-id' );
+                    var messageBox = $( tableId ).data( 'message-box' );
                     var errorMessage = 'Following Fields are required: ';
                     var errorFields = '';
                     var hasRequiredFields = true;
-                    requiredFields = $(tfiTable).data( 'required' ).split(',');
+                    requiredFields = $( tableId ).data( 'required' ).split(',');
                     for ( var i = 0; i < requiredFields.length; i++ ) {
                         var hasRequiredField = false;
 
-                        $( tfiTable ).find('th select').each(function() {
+                        $( tableId ).find('th select').each(function() {
                             if ($(this).val() === requiredFields[i]) {
                                 hasRequiredField = true;
                             }
                         });
                         if ( !hasRequiredField ) {
                             hasRequiredFields = false;
-                            $(tfiTable).find('th select').first().find('option').each(function () {
+                            $( tableId ).find('th select').first().find('option').each(function () {
                                 if ($(this).val() === requiredFields[i]) {
                                     var splitter = ', ';
                                     if (errorFields === '') {
@@ -207,6 +212,8 @@
                 });
             }
         }
+
+        tfiTableNr++;
         
         options.callback(tfiTable);
     };
