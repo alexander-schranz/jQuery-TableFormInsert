@@ -152,33 +152,56 @@
         // Validation
         if ( options.submitButton !== '' ) {
             var requiredFields = '';
-            if (options.requiredFields.length > 0) {
+            if ( options.requiredFields.length > 0 ) {
                 for ( var i = 0; i < options.requiredFields.length; i++ ) {
                     var option = options.requiredFields[i];
                     var splitter = ',';
-                    if (requiredFields === '') {
+                    if ( requiredFields === '' ) {
                         splitter = '';
                     }
                     requiredFields = requiredFields + splitter + option;
                 }
-                $(tfiTable).data('required', requiredFields);
-
-                $(options.submitButton).click(function(event) {
+                $( tfiTable ).data('required', requiredFields);
+                $( options.submitButton ).data( 'message-box' , options.infoBox );
+                $( options.submitButton ).click(function(event) {
+                    var messageBox = $(this).data( 'message-box' );
+                    var errorMessage = 'Following Fields are required: ';
+                    var errorFields = '';
                     var hasRequiredFields = true;
-                    requiredFields = $(tfiTable).data('required').split(',');
+                    requiredFields = $(tfiTable).data( 'required' ).split(',');
                     for ( var i = 0; i < requiredFields.length; i++ ) {
-                        hasRequiredField = false;
-                        $(tfiTable).find('th select').each(function() {
+                        var hasRequiredField = false;
+
+                        $( tfiTable ).find('th select').each(function() {
                             if ($(this).val() === requiredFields[i]) {
                                 hasRequiredField = true;
                             }
                         });
-                        if (!hasRequiredField) {
+                        if ( !hasRequiredField ) {
                             hasRequiredFields = false;
+                            $(tfiTable).find('th select').first().find('option').each(function () {
+                                if ($(this).val() === requiredFields[i]) {
+                                    var splitter = ', ';
+                                    if (errorFields === '') {
+                                        splitter = '';
+                                    }
+                                    errorFields = errorFields + splitter + $(this).html();
+                                }
+                            });
                         }
                     }
+                    errorMessage = errorMessage + errorFields;
 
-                    if (!hasRequiredFields) {
+                    if ( !hasRequiredFields ) {
+                        if ( messageBox !== '' ) {
+                            $(messageBox).html( errorMessage );
+                            $(messageBox).addClass('tfi-error');
+                        } else {
+                            if ( options.removeErrorText ) {
+                                $(messageBox).html('');
+                            }
+                            $( messageBox ).removeClass('tfi-error');
+                        }
                         event.preventDefault();
                     }
                 });
@@ -209,6 +232,8 @@
         submitButton: '',
         requiredFields: [
         ],
+        infoBox: '',
+        removeErrorText: false,
         deactivateText: 'Not used',
         callback: function (table) {}
     };
