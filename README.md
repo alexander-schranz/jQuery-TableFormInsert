@@ -4,6 +4,9 @@ Small jQuery Plugin which Convert a copied Table from 'Microsoft Excel' or 'Open
 
 Changelog
 ======================
+1.3.1
+ - fix deselect row
+
 1.3
  - fix reconvert required fields check
  - add multi form support

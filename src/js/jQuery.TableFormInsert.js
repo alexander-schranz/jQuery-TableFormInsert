@@ -144,10 +144,10 @@
         // Add Event Listener: Row Hide
         $('.tfiCheckbox').change(function() {
             if (!$(this).prop('checked')) {
-                $(this).parent('table').find( '.tfiRow-' + $(this).data('row')).find('.tfiInput').addClass('deactivatedRow').not('.deactivatedColumn').prop('disabled', true).parent().find('.tfiText').css(options.deactivateCSS);
+                $(this).closest('table').find( '.tfiRow-' + $(this).data('row')).find('.tfiInput').addClass('deactivatedRow').not('.deactivatedColumn').prop('disabled', true).parent().find('.tfiText').css(options.deactivateCSS);
                 $(this).addClass('deactivated');
             } else {
-                $(this).parent('table').find( '.tfiRow-' + $(this).data('row')).find('.tfiInput').removeClass('deactivatedRow').not('.deactivatedColumn').prop('disabled', false).parent().find('.tfiText').css(options.resetCSS);
+                $(this).closest('table').find( '.tfiRow-' + $(this).data('row')).find('.tfiInput').removeClass('deactivatedRow').not('.deactivatedColumn').prop('disabled', false).parent().find('.tfiText').css(options.resetCSS);
                 $(this).removeClass('deactivated');
             }
         });
